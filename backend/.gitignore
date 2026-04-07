@@ -1,0 +1,18 @@
+# Ignore Python virtual environments (must not upload, too large)
+venv/
+ENV/
+env/
+
+# Ignore Python compiled cache files
+__pycache__/
+*.py[cod]
+
+# Ignore local database (if you don’t want to upload test data)
+db.sqlite3
+
+# Ignore frontend dependencies (if you include frontend in the same repo later)
+node_modules/
+
+# Ignore system files
+.DS_Store
+.vscode/
