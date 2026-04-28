@@ -138,8 +138,12 @@ npm create vite@latest frontend -- --template react
 |------|------|------|
 | `vite` | devDependency | 前端构建工具 |
 | `typescript` | devDependency | TypeScript 支持 |
-
-> ⚠️ **注意**：目前前端仍是 Vite 默认模板，尚未安装 `axios` 和 `react`/`react-dom`，也尚未编写任何业务组件。
+| `react` | dependency | React 核心库 |
+| `react-dom` | dependency | React DOM 渲染 |
+| `axios` | dependency | HTTP 请求库，与后端 API 通信 |
+| `@vitejs/plugin-react` | devDependency | Vite 的 React JSX 转换插件 |
+| `@types/react` | devDependency | React TypeScript 类型定义 |
+| `@types/react-dom` | devDependency | React DOM TypeScript 类型定义 |
 
 ### 启动前端开发服务器
 
@@ -167,15 +171,17 @@ npm run dev
 
 ### 前端
 - [x] 创建 Vite + React + TypeScript 项目
-- [x] 自动安装默认依赖（vite、typescript）
-- [ ] 安装 axios 和 react 相关依赖
-- [ ] 封装 Axios（api/axios.ts）
-- [ ] 编写 AddTaskModal 组件
-- [ ] 编写 TaskCard 组件（含 checkbox + 计时器）
-- [ ] 编写 TaskList 组件
-- [ ] 编写 HistoryTable 组件
-- [ ] 编写 App.tsx（主页面 + 双 Tab）
-- [ ] 编写全局 CSS 样式（深色主题）
+- [x] 安装 react、react-dom、axios、@vitejs/plugin-react
+- [x] 配置 vite.config.ts（添加 React 插件）
+- [x] 配置 tsconfig.json（添加 jsx: react-jsx）
+- [x] 封装 Axios（api/axios.ts）
+- [x] 定义 TypeScript 类型（types.ts）
+- [x] 编写 AddTaskModal 组件（含紧急度/大小/截止日期选择）
+- [x] 编写 TaskCard 组件（含 checkbox + 实时计时器）
+- [x] 编写 HistoryTable 组件
+- [x] 编写 App.tsx（主页面 + Active Tasks / History 双 Tab）
+- [x] 编写全局 CSS 样式（深色主题）
+- [x] 前后端联调验证 ✅
 
 ---
 
@@ -220,4 +226,26 @@ REST_FRAMEWORK = {
 ```powershell
 venv\Scripts\python manage.py makemigrations
 venv\Scripts\python manage.py migrate
+```
+
+---
+
+## 🔐 Django Admin 账号
+
+| 项目 | 值 |
+|------|-----|
+| **URL** | http://localhost:8000/admin/ |
+| **Username** | `admin` |
+| **Password** | `admin1234` |
+
+> ⚠️ 这是学习用的临时密码，正式上线前需要更改！
+
+### 如何重新创建 / 修改密码
+
+```bash
+# 在 backend/ 目录下，修改密码
+venv\Scripts\python manage.py changepassword admin
+
+# 或用 shell 重新创建
+venv\Scripts\python manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@example.com', '新密码')"
 ```
