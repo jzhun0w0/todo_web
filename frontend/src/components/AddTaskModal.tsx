@@ -17,10 +17,12 @@ const SIZES: { value: Todo['size']; label: string }[] = [
   { value: 'small', label: 'Small' },
   { value: 'medium', label: 'Medium' },
   { value: 'large', label: 'Large' },
+  { value: 'extra_large', label: 'Extra Large' },
 ]
 
 export default function AddTaskModal({ onClose, onSubmit }: Props) {
   const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
   const [urgency, setUrgency] = useState<Todo['urgency']>('medium')
   const [size, setSize] = useState<Todo['size']>('medium')
   const [hasDueDate, setHasDueDate] = useState(false)
@@ -30,6 +32,7 @@ export default function AddTaskModal({ onClose, onSubmit }: Props) {
     if (!title.trim()) return
     onSubmit({
       title: title.trim(),
+      description: description.trim() ? description.trim() : null,
       urgency,
       size,
       has_due_date: hasDueDate,
@@ -51,6 +54,16 @@ export default function AddTaskModal({ onClose, onSubmit }: Props) {
             onChange={e => setTitle(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSubmit()}
             autoFocus
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Description (Optional)</label>
+          <textarea
+            placeholder="Add some details..."
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            rows={3}
           />
         </div>
 

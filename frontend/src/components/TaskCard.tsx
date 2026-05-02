@@ -6,6 +6,7 @@ interface Props {
   onStart: (id: number) => void
   onComplete: (id: number) => void
   onDelete: (id: number) => void
+  onClick?: () => void
 }
 
 function formatDuration(seconds: number): string {
@@ -22,7 +23,7 @@ function isOverdue(dueDate: string | null): boolean {
   return new Date(dueDate) < new Date(new Date().toDateString())
 }
 
-export default function TaskCard({ todo, onStart, onComplete, onDelete }: Props) {
+export default function TaskCard({ todo, onStart, onComplete, onDelete, onClick }: Props) {
   const [elapsed, setElapsed] = useState(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -43,21 +44,24 @@ export default function TaskCard({ todo, onStart, onComplete, onDelete }: Props)
       {/* Checkbox */}
       <div
         className="task-checkbox"
-        onClick={() => onComplete(todo.id)}
+        onClick={(e) => { e.stopPropagation(); onComplete(todo.id); }}
         title="Mark as complete"
       >
         <svg viewBox="0 0 14 14"><polyline points="2,7 6,11 12,3" /></svg>
       </div>
 
       {/* Body */}
-      <div className="task-body">
+      <div className="task-body" onClick={onClick} style={{ cursor: 'pointer' }}>
         <div className="task-title">{todo.title}</div>
+        {todo.description && (
+          <div className="task-desc-preview">{todo.description}</div>
+        )}
         <div className="task-tags">
           <span className={`tag tag-urgency-${todo.urgency}`}>
             {todo.urgency}
           </span>
           <span className={`tag ${sizeClass}`}>
-            {todo.size}
+            {todo.size === 'extra_large' ? 'Extra Large' : todo.size}
           </span>
           {todo.has_due_date && todo.due_date && (
             <span className={`tag ${isOverdue(todo.due_date) ? 'tag-overdue' : 'tag-due'}`}>
@@ -78,7 +82,7 @@ export default function TaskCard({ todo, onStart, onComplete, onDelete }: Props)
         {todo.status === 'pending' && (
           <button
             className="icon-btn start"
-            onClick={() => onStart(todo.id)}
+            onClick={(e) => { e.stopPropagation(); onStart(todo.id); }}
             title="Start timer"
           >
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -87,7 +91,7 @@ export default function TaskCard({ todo, onStart, onComplete, onDelete }: Props)
         {todo.status === 'in_progress' && (
           <button
             className="icon-btn complete"
-            onClick={() => onComplete(todo.id)}
+            onClick={(e) => { e.stopPropagation(); onComplete(todo.id); }}
             title="Complete task"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -97,7 +101,7 @@ export default function TaskCard({ todo, onStart, onComplete, onDelete }: Props)
         )}
         <button
           className="icon-btn delete"
-          onClick={() => onDelete(todo.id)}
+          onClick={(e) => { e.stopPropagation(); onDelete(todo.id); }}
           title="Delete task"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

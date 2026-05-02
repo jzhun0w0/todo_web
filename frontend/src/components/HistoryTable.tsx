@@ -3,6 +3,7 @@ import type { Todo } from '../types'
 interface Props {
   history: Todo[]
   onDelete: (id: number) => void
+  onClickTodo: (todo: Todo) => void
 }
 
 function formatDuration(seconds: number | null): string {
@@ -26,7 +27,7 @@ const URGENCY_LABELS: Record<string, string> = {
   low: '🟢 Low', medium: '🟡 Medium', high: '🟠 High', critical: '🔴 Critical',
 }
 
-export default function HistoryTable({ history, onDelete }: Props) {
+export default function HistoryTable({ history, onDelete, onClickTodo }: Props) {
   if (history.length === 0) {
     return (
       <div className="history-section">
@@ -56,17 +57,26 @@ export default function HistoryTable({ history, onDelete }: Props) {
           </thead>
           <tbody>
             {history.map(todo => (
-              <tr key={todo.id}>
+              <tr
+                key={todo.id}
+                onClick={() => onClickTodo(todo)}
+                style={{ cursor: 'pointer' }}
+                title="Click to view details"
+              >
                 <td className="title-cell">{todo.title}</td>
                 <td>
-                  <span className={`tag tag-urgency-${todo.urgency}`}>
-                    {URGENCY_LABELS[todo.urgency]}
-                  </span>
+                  {todo.urgency === 'cuti'
+                    ? <span className="tag tag-cuti">—</span>
+                    : <span className={`tag tag-urgency-${todo.urgency}`}>{URGENCY_LABELS[todo.urgency]}</span>
+                  }
                 </td>
                 <td>
-                  <span className={`tag tag-size-${todo.size === 'medium' ? 'medium' : todo.size}`}>
-                    {todo.size}
-                  </span>
+                  {todo.size === 'cuti'
+                    ? <span className="tag tag-cuti">—</span>
+                    : <span className={`tag tag-size-${todo.size === 'medium' ? 'medium' : todo.size}`}>
+                        {todo.size === 'extra_large' ? 'Extra Large' : todo.size}
+                      </span>
+                  }
                 </td>
                 <td className="date-cell">
                   {todo.has_due_date && todo.due_date ? todo.due_date : '—'}

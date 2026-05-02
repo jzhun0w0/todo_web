@@ -1,8 +1,9 @@
 export interface Todo {
   id: number
   title: string
-  urgency: 'low' | 'medium' | 'high' | 'critical'
-  size: 'small' | 'medium' | 'large'
+  description: string | null
+  urgency: 'low' | 'medium' | 'high' | 'critical' | 'cuti'
+  size: 'small' | 'medium' | 'large' | 'extra_large' | 'cuti'
   has_due_date: boolean
   due_date: string | null
   status: 'pending' | 'in_progress' | 'completed'
@@ -14,8 +15,24 @@ export interface Todo {
 
 export interface CreateTodoPayload {
   title: string
+  description: string | null
   urgency: Todo['urgency']
   size: Todo['size']
   has_due_date: boolean
   due_date: string | null
+}
+
+export interface GlobalSettings {
+  daily_goal_score: number
+  cuti_points: number
+  monthly_leaves_quota: number
+  next_month_leaves_quota: number
+  leaves_remaining: number
+}
+
+export interface RewardItem {
+  id: number
+  name: string
+  cost: number
+  created_at: string
 }
