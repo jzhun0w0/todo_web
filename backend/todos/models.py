@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Todo(models.Model):
@@ -22,10 +23,13 @@ class Todo(models.Model):
         ('completed', 'Completed'),
     ]
 
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='todos')
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     urgency = models.CharField(max_length=10, choices=URGENCY_CHOICES, default='medium')
     size = models.CharField(max_length=20, choices=SIZE_CHOICES, default='medium')
+    reward_points = models.IntegerField(default=1)
+    expected_time_minutes = models.IntegerField(null=True, blank=True)
     has_due_date = models.BooleanField(default=False)
     due_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
@@ -40,31 +44,29 @@ class Todo(models.Model):
     def __str__(self):
         return self.title
 
+
 class GlobalSettings(models.Model):
     """
-    单例模型，用于存储全局设置：每日目标、Cuti Points 余额和每月休假配额。
+    Per-user singleton，存储每个用户的全局设置：每日目标、积分余额和每月休假配额。
     """
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='settings')
     daily_goal_score = models.IntegerField(default=10)
+    reward_points = models.IntegerField(default=0)
     cuti_points = models.IntegerField(default=0)
-    # 本月锁定的假日配额（月初从 next_month_leaves_quota 复制）
     monthly_leaves_quota = models.IntegerField(default=100)
-    # 用户可随时修改，但下月才生效
     next_month_leaves_quota = models.IntegerField(default=100)
-    # 本月剩余假日次数
     leaves_remaining = models.IntegerField(default=100)
-    # 用于判断是否需要月初重置，格式 "YYYY-MM"
     last_reset_month = models.CharField(max_length=7, default='')
 
     def __str__(self):
-        return f"Global Settings (Goal: {self.daily_goal_score}, Cuti: {self.cuti_points})"
+        return f"Settings for {self.user.username}"
 
     @classmethod
-    def get_settings(cls):
+    def get_settings(cls, user):
         from django.utils import timezone
-        obj, created = cls.objects.get_or_create(id=1)
+        obj, created = cls.objects.get_or_create(user=user)
         current_month = timezone.localdate().strftime('%Y-%m')
         if obj.last_reset_month != current_month:
-            # 月初重置：将下月配额应用到本月
             obj.monthly_leaves_quota = obj.next_month_leaves_quota
             obj.leaves_remaining = obj.next_month_leaves_quota
             obj.last_reset_month = current_month
@@ -74,14 +76,16 @@ class GlobalSettings(models.Model):
 
 class RewardItem(models.Model):
     """
-    用户自定义奖励项目，消耗 Cuti Points 兑换。
+    用户自定义奖励项目，支持同时消耗 Reward Points 和 Cuti Points。
     """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rewards')
     name = models.CharField(max_length=255)
-    cost = models.IntegerField()  # Cuti Points 费用
+    cost_rp = models.IntegerField(default=0)    # Reward Points cost
+    cost_cuti = models.IntegerField(default=0)  # Cuti Points cost
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['cost', 'created_at']
+        ordering = ['created_at']
 
     def __str__(self):
-        return f"{self.name} ({self.cost} pts)"
+        return f"{self.name} ({self.cost_rp} RP + {self.cost_cuti} Cuti)"

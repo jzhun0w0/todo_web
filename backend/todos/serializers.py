@@ -7,23 +7,24 @@ class GlobalSettingsSerializer(serializers.ModelSerializer):
         model = GlobalSettings
         fields = [
             'daily_goal_score',
+            'reward_points',
             'cuti_points',
             'monthly_leaves_quota',
             'next_month_leaves_quota',
             'leaves_remaining',
         ]
-        read_only_fields = ['cuti_points', 'monthly_leaves_quota', 'leaves_remaining']
+        read_only_fields = ['reward_points', 'cuti_points', 'monthly_leaves_quota', 'leaves_remaining']
 
 
 class RewardItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = RewardItem
         fields = '__all__'
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']
 
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = '__all__'
-        read_only_fields = ['created_at', 'started_at', 'completed_at', 'time_spent_seconds', 'status']
+        read_only_fields = ['id', 'user', 'created_at', 'started_at', 'completed_at', 'time_spent_seconds', 'status']

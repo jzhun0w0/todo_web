@@ -1,16 +1,20 @@
 from django.contrib import admin
-from .models import Todo
+from .models import Todo, GlobalSettings, RewardItem
 
 @admin.register(Todo)
 class TodoAdmin(admin.ModelAdmin):
-    # 在列表页面显示的字段
-    list_display = ('title', 'urgency', 'size', 'status', 'has_due_date', 'due_date', 'created_at')
-    
-    # 可以在后台进行搜索的字段
-    search_fields = ('title',)
-    
-    # 在右侧添加过滤选项
+    list_display = ('title', 'user', 'urgency', 'size', 'status', 'has_due_date', 'due_date', 'created_at')
+    search_fields = ('title', 'user__username')
     list_filter = ('status', 'urgency', 'size', 'has_due_date')
-    
-    # 设置只读字段，防止在后台被意外修改
+    readonly_fields = ('created_at',)
+
+@admin.register(GlobalSettings)
+class GlobalSettingsAdmin(admin.ModelAdmin):
+    list_display = ('user', 'daily_goal_score', 'cuti_points', 'leaves_remaining', 'last_reset_month')
+    search_fields = ('user__username',)
+
+@admin.register(RewardItem)
+class RewardItemAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user', 'cost_rp', 'cost_cuti', 'created_at')
+    search_fields = ('name', 'user__username')
     readonly_fields = ('created_at',)

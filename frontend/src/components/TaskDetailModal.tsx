@@ -76,6 +76,10 @@ export default function TaskDetailModal({ todo, onClose }: Props) {
               <span className="value">{todo.has_due_date && todo.due_date ? todo.due_date : 'None'}</span>
             </div>
             <div className="detail-item">
+              <span className="label">Expected Time</span>
+              <span className="value">{todo.expected_time_minutes ? `${todo.expected_time_minutes}m` : '—'}</span>
+            </div>
+            <div className="detail-item">
               <span className="label">Time Spent</span>
               <span className="value">{formatDuration(todo.time_spent_seconds)}</span>
             </div>

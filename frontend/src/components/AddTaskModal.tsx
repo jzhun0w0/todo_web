@@ -25,16 +25,21 @@ export default function AddTaskModal({ onClose, onSubmit }: Props) {
   const [description, setDescription] = useState('')
   const [urgency, setUrgency] = useState<Todo['urgency']>('medium')
   const [size, setSize] = useState<Todo['size']>('medium')
+  const [rewardPoints, setRewardPoints] = useState(1)
+  const [expectedTime, setExpectedTime] = useState('')
   const [hasDueDate, setHasDueDate] = useState(false)
   const [dueDate, setDueDate] = useState('')
 
   const handleSubmit = () => {
     if (!title.trim()) return
+    const parsedTime = parseInt(expectedTime, 10)
     onSubmit({
       title: title.trim(),
       description: description.trim() ? description.trim() : null,
       urgency,
       size,
+      reward_points: rewardPoints,
+      expected_time_minutes: !isNaN(parsedTime) && parsedTime > 0 ? parsedTime : null,
       has_due_date: hasDueDate,
       due_date: hasDueDate && dueDate ? dueDate : null,
     })
@@ -95,6 +100,36 @@ export default function AddTaskModal({ onClose, onSubmit }: Props) {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Reward Points */}
+        <div className="form-group">
+          <label>Reward Points <span style={{ color: 'var(--text-muted)', fontWeight: 400, textTransform: 'none' }}>— earned on completion</span></label>
+          <div className="reward-points-row">
+            <input
+              type="number"
+              className="rp-input"
+              value={rewardPoints}
+              min={1}
+              onChange={e => {
+                const v = parseInt(e.target.value, 10)
+                if (!isNaN(v) && v >= 1) setRewardPoints(v)
+              }}
+            />
+            <span className="rp-label">pts</span>
+          </div>
+        </div>
+
+        {/* Expected Time */}
+        <div className="form-group">
+          <label>Expected Time (minutes) <span style={{ color: 'var(--text-muted)', fontWeight: 400, textTransform: 'none' }}>— optional</span></label>
+          <input
+            type="number"
+            placeholder="e.g. 30"
+            value={expectedTime}
+            min={1}
+            onChange={e => setExpectedTime(e.target.value)}
+          />
         </div>
 
         <div className="form-group">
